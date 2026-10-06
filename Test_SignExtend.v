@@ -1,47 +1,28 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date:    13:44:22 07/08/2023 
-// Design Name: 
-// Module Name:    Test_SignExtend 
-// Project Name: 
-// Target Devices: 
-// Tool versions: 
-// Description: 
-//
-// Dependencies: 
-//
-// Revision: 
-// Revision 0.01 - File Created
-// Additional Comments: 
-//
-//////////////////////////////////////////////////////////////////////////////////
+
 module Test_SignExtend;
 
-	// Inputs
-	reg [4:0] Immediate;
+reg [4:0] Immediate;
+wire [15:0] Extended;
 
-	// Outputs
-	wire [15:0] Extended;
+SignExtend uut (
+    .Immediate(Immediate),
+    .Extended(Extended)
+);
 
-	// Instantiate the Unit Under Test (UUT)
-	SignExtend uut (
-		.Immediate(Immediate), 
-		.Extended(Extended)
-	);
+initial begin
+    Immediate = 5'b10010; // -14
+    #1;
+    if (Extended !== 16'hfff2)
+        $fatal(1, "Sign extension failed for a negative immediate.");
 
-	initial begin
-		// Initialize Inputs
-		Immediate = 5'b10010;
+    Immediate = 5'b00010; // 2
+    #1;
+    if (Extended !== 16'h0002)
+        $fatal(1, "Sign extension failed for a positive immediate.");
 
-		// Wait 100 ns for global reset to finish
-		#100;
-       
-		 Immediate = 5'b00010;
-		// Add stimulus here
+    $display("Sign-extension tests passed.");
+    $finish;
+end
 
-	end
-      
 endmodule
