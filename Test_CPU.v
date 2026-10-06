@@ -1,61 +1,47 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date:    13:40:41 07/08/2023 
-// Design Name: 
-// Module Name:    Test_CPU 
-// Project Name: 
-// Target Devices: 
-// Tool versions: 
-// Description: 
-//
-// Dependencies: 
-//
-// Revision: 
-// Revision 0.01 - File Created
-// Additional Comments: 
-//
-//////////////////////////////////////////////////////////////////////////////////
+
 module Test_CPU;
 
-	// Inputs
-	reg Clk;
+reg Clk;
+wire [15:0] Temp;
+wire [15:0] ReadData1;
+wire [15:0] ReadData2;
+wire [15:0] Finalextend;
+wire Zero;
+integer cycle;
 
-	// Outputs
-	wire [15:0] Temp;
-	wire [15:0] Finalextend;
-	wire [15:0] ReadData1;
-	wire [15:0] ReadData2;
-	wire Zero;
+CPU uut (
+    .Clk(Clk),
+    .Temp(Temp),
+    .ReadData1(ReadData1),
+    .ReadData2(ReadData2),
+    .Finalextend(Finalextend),
+    .Zero(Zero)
+);
 
-	// Instantiate the Unit Under Test (UUT)
-	CPU uut (
-		.Clk(Clk), 
-		.Temp(Temp), 
-		.Finalextend(Finalextend), 
-		.Zero(Zero),
-		.ReadData1(ReadData1),
-		.ReadData2(ReadData2)
-	);
-	
-initial begin 
-		Clk=0;
-		#100;
-		forever #10 Clk = ~Clk;
-		end
+initial begin
+    Clk = 1'b0;
+    forever #5 Clk = ~Clk;
+end
 
-//	initial begin
-		// Initialize Inputs
-	//	Clk = 0;
+initial begin
+    // Allow the sample program to complete and reach its no-op region.
+    for (cycle = 0; cycle < 200; cycle = cycle + 1)
+        @(posedge Clk);
+    #1;
 
-		// Wait 100 ns for global reset to finish
-		//#100;
-        
-		// Add stimulus here
+    if (uut.RegFile1.Registers[15] !== 16'd11)
+        $fatal(1, "Expected dot product 11 in register 15; got %0d.",
+               uut.RegFile1.Registers[15]);
 
-	//end
-      
+    if (uut.dataMemory.Memory[16] !== 16'd11)
+        $fatal(1, "Expected intermediate result 11 at data-memory address 16.");
+
+    if (uut.dataMemory.Memory[4] !== 16'd11)
+        $fatal(1, "Expected final result 11 at data-memory address 4.");
+
+    $display("CPU integration test passed: 3*1 + 4*2 = 11.");
+    $finish;
+end
+
 endmodule
-
