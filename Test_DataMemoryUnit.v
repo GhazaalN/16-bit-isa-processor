@@ -1,81 +1,65 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date:    13:41:45 07/08/2023 
-// Design Name: 
-// Module Name:    Test_DataMemoryUnit 
-// Project Name: 
-// Target Devices: 
-// Tool versions: 
-// Description: 
-//
-// Dependencies: 
-//
-// Revision: 
-// Revision 0.01 - File Created
-// Additional Comments: 
-//
-//////////////////////////////////////////////////////////////////////////////////
+
 module Test_DataMemoryUnit;
 
-	// Inputs
-	reg [15:0] Address;
-	reg [15:0] Write_Data; //value
-	reg Clk;
-	reg MemWrite; //we
+reg [15:0] Address;
+reg [15:0] Write_Data;
+reg Clk;
+reg MemWrite;
+wire [15:0] Read_Data;
 
-	// Outputs
-	wire [15:0] Read_Data;
+DataMemoryUnit uut (
+    .Address(Address),
+    .Write_Data(Write_Data),
+    .Clk(Clk),
+    .MemWrite(MemWrite),
+    .Read_Data(Read_Data)
+);
 
-	// Instantiate the Unit Under Test (UUT)
-	DataMemoryUnit uut (
-		.Address(Address), 
-		.Write_Data(Write_Data), 
-		.Clk(Clk), 
-		.MemWrite(MemWrite), 
-		.Read_Data(Read_Data)
-	);
+initial begin
+    Clk = 1'b0;
+    MemWrite = 1'b0;
+    Address = 16'd0;
+    Write_Data = 16'd0;
+    #1;
+    if (Read_Data !== 16'd3)
+        $fatal(1, "Memory[0] should initially contain 3.");
 
-	initial begin
-		// Initialize Inputs
-		Address = 16'h0002;
-		Write_Data = 16'h0009;
-		Clk = 0;
-		MemWrite = 1;
+    Address = 16'd2;
+    #1;
+    if (Read_Data !== 16'd1)
+        $fatal(1, "Memory[2] should initially contain 1.");
 
-		// Wait 100 ns for global reset to finish
-		  #20;
-    
-		   Address = 16'h0002;
-			Write_Data = 16'h0009;
-			Clk = 1;
-			MemWrite = 1;
-			
-		  #20;
-		   Address = 16'h0002;
-			Write_Data = 16'h0009;
-			Clk = 0;
-			MemWrite = 1;
-    
-	 
-        #20;
-		   Address = 16'h0002;
-			Write_Data = 16'h0009;
-			Clk = 1;
-			MemWrite = 0;
-			
-			
-		  #20;
-		   Address = 16'h0003;
-			Write_Data = 16'h0009;
-			Clk = 1;
-			MemWrite = 0;
-        
-		// Add stimulus here
+    Address = 16'd5;
+    Write_Data = 16'h1234;
+    MemWrite = 1'b1;
+    #1;
+    Clk = 1'b1;
+    #1;
+    Clk = 1'b0;
+    MemWrite = 1'b0;
+    #1;
+    if (Read_Data !== 16'h1234)
+        $fatal(1, "Data-memory write/read check failed.");
 
-	end
-      
+    Address = 16'd201;
+    #1;
+    if (Read_Data !== 16'b0)
+        $fatal(1, "Out-of-range reads should return zero.");
+
+    MemWrite = 1'b1;
+    Write_Data = 16'hffff;
+    Clk = 1'b1;
+    #1;
+    Clk = 1'b0;
+    MemWrite = 1'b0;
+    Address = 16'd200;
+    #1;
+    if (Read_Data !== 16'b0)
+        $fatal(1, "Out-of-range writes must be ignored.");
+
+    $display("Data-memory tests passed.");
+    $finish;
+end
+
 endmodule
-
