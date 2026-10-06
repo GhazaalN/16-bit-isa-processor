@@ -14,7 +14,13 @@ The top-level module is `CPU`. Its main components are:
 - `DataMemoryUnit.v`: 201-word data memory
 - `Adder_16bit.v`, `Mux2_1_16bit.v`, `Mux_4bit.v`, `SignExtend.v`: datapath helpers
 
-The instruction word is 16 bits. The opcode is `[15:13]`; the register fields are `[12:9]` and `[8:5]`; the low five bits are used as an immediate for immediate, load/store, branch, and jump instructions. For register-format instructions, `[4:1]` selects the destination and bit `[0]` selects shift direction.
+## Instruction formats
+
+Each instruction is 16 bits, with the opcode in `[15:13]`.
+
+- **Register format:** `[12:9]` and `[8:5]` are source registers; `[4:1]` is the destination; `[0]` selects shift or rotate direction.
+- **Immediate format:** `[12:9]` is the base/source register, `[8:5]` is the destination or second source, and `[4:0]` is a signed immediate.
+- **Jump format:** `[12:0]` is the target instruction address.
 
 ## Opcode map
 
@@ -29,17 +35,17 @@ The instruction word is 16 bits. The opcode is `[15:13]`; the register fields ar
 | `110` | LW | Load from base plus signed offset |
 | `111` | J | Jump to the encoded instruction address |
 
-The sample program and initial data memory are embedded in the HDL source. The sample computes `3×1 + 4×2 = 11`, stores the running result at data-memory address 16, and writes the final result at address 4.
+The sample program and initial data memory are embedded in the HDL source. It calculates `3×1 + 4×2 = 11`, stores an intermediate result at data-memory address 16, and writes the final result at address 4.
 
 ## Simulate
 
-The self-checking testbenches are named `Test_*.v`. With Icarus Verilog installed, compile a unit test by listing its design files and testbench, then run it with `vvp`. For example:
+Self-checking benches cover the ALU, control unit, data memory, instruction memory, program counter, register file, sign extension, and CPU integration. With Icarus Verilog installed, run a unit test by compiling the design file(s) and its testbench, then launching the output with `vvp`. For example:
 
 ```sh
 iverilog -g2012 -s Test_Alu -o test_alu ALU.v Test_Alu.v
 vvp test_alu
 
-iverilog -g2012 -s Test_CPU -o test_cpu   CPU.v Pc.v InstructionMemory.v ControlUnit.v RegisterFile.v   Mux2_1_16bit.v Mux_4bit.v SignExtend.v ALU.v   Adder_16bit.v DataMemoryUnit.v Test_CPU.v
+iverilog -g2012 -s Test_CPU -o test_cpu CPU.v Pc.v InstructionMemory.v ControlUnit.v RegisterFile.v Mux2_1_16bit.v Mux_4bit.v SignExtend.v ALU.v Adder_16bit.v DataMemoryUnit.v Test_CPU.v
 vvp test_cpu
 ```
 
@@ -47,7 +53,7 @@ The repository also contains historical Xilinx ISE reports and waveform files fr
 
 ## Limitations
 
-This is a small teaching design, not a production CPU. It has no reset input, uses initialized memories, and its data memory is limited to 201 words. The HDL has been updated for deterministic simulation and the testbenches document the intended behavior; FPGA synthesis and timing have not been validated here.
+This is a small teaching design, not a production CPU. It has no reset input, uses initialized memories, and its data memory is limited to 201 words. FPGA synthesis and timing have not been validated here.
 
 ## License
 
