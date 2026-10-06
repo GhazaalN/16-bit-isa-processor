@@ -16,8 +16,8 @@ initial begin
 
     // Example program: calculate the dot product of [3,4] and [1,2].
     // The program uses repeated addition for multiplication.
-    Memory[0]  = 16'b001_0000_0000_1111_0;  // addi $15,$0,0: accumulator
-    Memory[1]  = 16'b001_0000_0001_00010;   // addi $1,$0,2: vector length
+    Memory[0]  = 16'b001_0000_1111_00000;  // addi $15,$0,0: accumulator
+    Memory[1]  = 16'b001_0000_0001_00010;  // addi $1,$0,2: vector length
     Memory[2]  = 16'b000_0000_0000_0010_0;  // add  $2,$0,$0: first vector pointer
     Memory[3]  = 16'b000_0000_0001_0011_0;  // add  $3,$0,$1: second vector pointer
     Memory[4]  = 16'b100_0001_0010_01101;   // beq  $1,$2,13: branch to instruction 18
