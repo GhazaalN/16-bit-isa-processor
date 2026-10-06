@@ -1,54 +1,41 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date:    13:43:02 07/08/2023 
-// Design Name: 
-// Module Name:    Test_Pc 
-// Project Name: 
-// Target Devices: 
-// Tool versions: 
-// Description: 
-//
-// Dependencies: 
-//
-// Revision: 
-// Revision 0.01 - File Created
-// Additional Comments: 
-//
-//////////////////////////////////////////////////////////////////////////////////
+
 module Test_Pc;
 
-	// Inputs
-	reg Clk;
-	reg [15:0] PcInput;
-	integer i;
+reg Clk;
+reg [15:0] PcInput;
+wire [15:0] PcOutput;
 
-	// Outputs
-	wire [15:0] PcOutput;
+Pc uut (
+    .Clk(Clk),
+    .PcInput(PcInput),
+    .PcOutput(PcOutput)
+);
 
-	// Instantiate the Unit Under Test (UUT)
-	Pc uut (
-		.Clk(Clk), 
-		.PcInput(PcInput), 
-		.PcOutput(PcOutput)
-	);
-   always begin
-    # 10 Clk = ~Clk;
-	end
+initial begin
+    Clk = 1'b0;
+    PcInput = 16'd0;
+    #1;
+    if (PcOutput !== 16'd0)
+        $fatal(1, "Program counter should initialize to zero.");
 
-	initial begin
-		// Initialize Inputs
-		Clk = 0;
-		PcInput = 0;
+    PcInput = 16'd7;
+    #1;
+    Clk = 1'b1;
+    #1;
+    if (PcOutput !== 16'd7)
+        $fatal(1, "Program counter did not capture its input.");
 
-		// Wait 100 ns for global reset to finish
-		  #10;
-     
-		for( i=0 ; i< 10; i = i+1)begin
-        PcInput= i;
-        #20;
-    end
-  end 
+    Clk = 1'b0;
+    PcInput = 16'd18;
+    #1;
+    Clk = 1'b1;
+    #1;
+    if (PcOutput !== 16'd18)
+        $fatal(1, "Program counter did not update on the next rising edge.");
+
+    $display("Program-counter tests passed.");
+    $finish;
+end
+
 endmodule
