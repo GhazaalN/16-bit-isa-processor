@@ -1,0 +1,37 @@
+# Xilinx ISE generated reports and implementation products
+*.ncd
+*.ngc
+*.ngd
+*.pcf
+*.par
+*.pad
+*.twr
+*.twx
+*.bgn
+*.bit
+*.mcs
+*.prm
+*.sym
+*.lso
+*.wdb
+*.vcd
+*.jou
+*.log
+*.xmsgs
+*.bmm
+fuseRelaunch.cmd
+*_summary.html
+par_usage_statistics.html
+_xmsgs/
+xst/
+_ngdbuild/
+_ngo/
+_impact/
+_floorplan/
+xlnx_auto_0_xdb/
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
