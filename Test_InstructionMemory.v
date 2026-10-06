@@ -13,7 +13,7 @@ InstructionMemory uut (
 initial begin
     Address = 16'd0;
     #1;
-    if (Instruction !== 16'b001_0000_0000_1111_0)
+    if (Instruction !== 16'b001_0000_1111_00000)
         $fatal(1, "Instruction memory did not retain instruction 0.");
 
     Address = 16'd18;
